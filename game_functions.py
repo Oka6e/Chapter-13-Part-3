@@ -45,7 +45,7 @@ def update_screen(ai_settings, screen, catcher, baseball):
     # Make the most recently drawn screen visible.
     pygame.display.flip()
 
-def update_baseball(ai_settings, screen, catcher, baseball):
+def update_baseball(ai_settings, stats, screen, catcher, baseball):
     """Update the positions of the baseball and detect collisions."""
     screen_rect = screen.get_rect()
     baseball.update()
@@ -57,6 +57,7 @@ def update_baseball(ai_settings, screen, catcher, baseball):
         new_ball.rect.y = new_ball.y
         baseball.add(new_ball)
     collisions = pygame.sprite.groupcollide(baseball, catcher, True, False)
+    check_baseball_bottom(ai_settings, stats, screen, catcher, baseball)
 
 def update_catcher(ai_settings, screen, catcher):
     screen_rect = screen.get_rect()
@@ -68,12 +69,21 @@ def update_catcher(ai_settings, screen, catcher):
         new_catcher.rect.bottom = screen_rect.bottom
         catcher.add(new_catcher)
 
-def check_baseball_bottom(ai_settings, screen, catcher, baseball):
+def check_baseball_bottom(ai_settings, stats, screen, catcher, baseball):
     """Check if the baseball hits the bottom of the screen."""
-    screen.rect = screen.get_rect()
+    screen_rect = screen.get_rect()
     for b in baseball.sprites():
-        if b.rect.top >= ai_settings.screen_height:
-            baseball.remove(b)
+        if b.rect.bottom >= screen_rect.bottom:
+            if stats.balls_left > 0:
+                stats.balls_left -= 1
+                baseball.empty()
+                update_baseball(ai_settings, stats, screen, catcher, baseball)
+                sleep(0.5)
+            else:
+                stats.game_active = False
+                sys.exit()
+
+
     
     
     
