@@ -4,22 +4,27 @@ import pygame
 from baseball import Baseball
 from catcher import Catcher
 from random import randint
+from time import sleep
 
 def check_keydown_events(event, catcher):
     """Respond to keypresses."""
     if event.key == pygame.K_RIGHT:
-        catcher.moving_right = True
+        for c in catcher:
+            c.moving_right = True
     elif event.key == pygame.K_LEFT:
-        catcher.moving_left = True
+        for c in catcher:
+            c.moving_left = True
     elif event.key == pygame.K_q:
         sys.exit()
 
 def check_keyup_events(event, catcher):
     """Respond to key releases."""
     if event.key == pygame.K_RIGHT:
-        catcher.moving_right = False
+        for c in catcher:
+            c.moving_right = False
     elif event.key == pygame.K_LEFT:
-        catcher.moving_left = False
+        for c in catcher:
+            c.moving_left = False
 
 def check_events(catcher):
     """Respond to keypresses and mouse events."""
@@ -48,7 +53,7 @@ def update_baseball(ai_settings, screen, catcher, baseball):
         new_ball = Baseball(ai_settings, screen)
         new_ball.x = randint(new_ball.rect.width, screen_rect.right - new_ball.rect.width)
         new_ball.rect.x = new_ball.x
-        new_ball.y = new_ball.rect.height
+        new_ball.y = -2 
         new_ball.rect.y = new_ball.y
         baseball.add(new_ball)
     collisions = pygame.sprite.groupcollide(baseball, catcher, True, False)
@@ -62,6 +67,13 @@ def update_catcher(ai_settings, screen, catcher):
         new_catcher.rect.centerx = new_catcher.center
         new_catcher.rect.bottom = screen_rect.bottom
         catcher.add(new_catcher)
+
+def check_baseball_bottom(ai_settings, screen, catcher, baseball):
+    """Check if the baseball hits the bottom of the screen."""
+    screen.rect = screen.get_rect()
+    for b in baseball.sprites():
+        if b.rect.top >= ai_settings.screen_height:
+            baseball.remove(b)
     
     
     

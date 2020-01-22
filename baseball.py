@@ -28,4 +28,7 @@ class Baseball(Sprite):
     def update(self):
         """Dropping the baseball."""
         self.y += self.ai_settings.baseball_drop_speed
+        if self.y >= self.ai_settings.screen_height:
+            # Raindrops reappear top border
+            self.y = -self.rect.height
         self.rect.y = self.y
